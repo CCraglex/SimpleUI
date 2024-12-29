@@ -1,0 +1,13 @@
+{
+    "name": "com.craglex.simple-ui",
+    "version": "1.0.0",
+    "description": "A simple package utilizing Unity UI for easy UI implementation.",
+    "displayName": "SimpleUI",
+    "unity": "2022.1",
+    "author": {
+        "name": "Craglex",
+        "email": "sanlikaaneren@gmail.com",
+        "url": "https://github.com/That0neDev/"
+    },
+    "license": "MIT"
+}
