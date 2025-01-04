@@ -1,85 +1,95 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Craglex.SimpleUI
 {
     [RequireComponent(typeof(CanvasGroup))]
     public class UIElement : MonoBehaviour
     {
-        public CanvasGroup canvas;
+        [SerializeField] List<UIElement> dependencyElements;
+        private CanvasGroup canvas;
+        private Image image;
+        public bool isOpen;
+        public bool grabAttention;
+        
         public UIElement returnElement;
-        public List<UIElement> nonAllowedElements = new();
-        public List<UIElement> dependencyElements = new();
 
-        private void Awake(){
-            if (canvas != null) return;
-            
-            Debug.LogWarning("No CanvasGroup set. Getting the one in the same object.",gameObject);
+        public virtual void Awake(){
             canvas = GetComponent<CanvasGroup>();
+            TryGetComponent(out image);
         }
-
-        /// <summary>
-        /// Opens UIElement, and makes it interactable.
-        /// </summary>
-        /// <returns></returns>
-        public UIElement Open(){
-            if(canvas.interactable){
-                Debug.LogWarning("UIElement is already open.",gameObject);
-                return null;
-            }
-
-            
+        public virtual UIElement Open(){
             canvas.alpha = 1;
             canvas.blocksRaycasts = true;
             canvas.interactable = true;
-            
+            isOpen = true;
             return this;
         }
-        /// <summary>
-        /// Opens all the dependencies via Open() if it is not marked in a recursive way.
-        /// </summary>
-        /// <param name="visitedElements">previousliy visited elements.</param>
-        /// <returns></returns>
-        public List<UIElement> OpenDependencies(List<UIElement> visitedElements){
-            List<UIElement> retVal = new();
+        public virtual UIElement Close(){
+            if(isOpen == false)
+                return null;
+            
+            canvas.alpha = 0;
+            canvas.blocksRaycasts = false;
+            canvas.interactable = false;
+            isOpen = false;
+            return this;
+        }        
+        public UIElement Restart(){
+            return Open();
+        }
+        public void GetDependencies(ref HashSet<UIElement> visitedElements){
+            HashSet<UIElement> retVal = new();
 
             if(dependencyElements == null)
-                return retVal;
+                return;
 
             foreach (var element in dependencyElements)
             {
                 if(visitedElements.Contains(element))
                     continue;
-
                 visitedElements.Add(element);
-                var addedElement = element.Open();
-                List<UIElement> extraDependencies = null;
-                if(addedElement != null){
-                    retVal.Add(addedElement);
-                    extraDependencies = addedElement.OpenDependencies(visitedElements);
-                }
-
-                if(extraDependencies != null)
-                    retVal.AddRange(extraDependencies);
+                element.GetDependencies(ref visitedElements);
             }
-
-            return retVal;
         }
-
-        /// <summary>
-        /// Closes UIElement.
-        /// </summary>
-        /// <param name="isRecursive">Should the function run recursively or not?</param>
-        public virtual void Close(bool isRecursive){
-            canvas.alpha = 0;
-            canvas.blocksRaycasts = false;
-            canvas.interactable = false;
-
-            if(dependencyElements.Count == 0 || !isRecursive)
+        public void SetCanvasVisibility(bool value){
+            if(value) 
+                canvas.alpha = 1;
+            else canvas.alpha = 0;
+        }
+        public void SetCanvasVisibility(float value){
+            canvas.alpha = Mathf.Clamp(value,0,1);
+        }
+        public void SetColor(Color value){
+            if(image == null)
                 return;
             
-            foreach (UIElement element in dependencyElements)
-                element.Close(false);
+            image.color = value;
+        }
+        public void SetColor(Vector3 value){
+            if(image == null)
+                return;
+            
+            image.color = new Color(value.x,value.y,value.z);
+        }
+        public void SetColor(Vector4 value){
+            image.color = new Color(value.x,value.y,value.z,value.w);
+        }
+        public void SetAlpha(float value){
+            if(image == null)
+                return;
+            
+            var c = new Color(image.color.r,image.color.g,image.color.b);
+            image.color = new(c.r,c.g,c.b,value);
+        }
+        public void SetAlpha(bool value){
+            if(image == null)
+                return;
+            int a = value ? 1 : 0;
+            var c = new Color(image.color.r,image.color.g,image.color.b);
+            image.color = new(c.r,c.g,c.b,a);          
         }
     }
 }

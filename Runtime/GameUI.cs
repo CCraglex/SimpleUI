@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using Behaviours.Interfaces;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,45 +6,29 @@ namespace Craglex.SimpleUI
 {
     public class GameUI : MonoBehaviour
     {
-        private List<UIElement> activeElements;
-        private UIElement lastTarget = null;
+        private HashSet<UIElement> activeElements = new();
+        internal UIElement lastTarget = null;
         [Header("Player input related config")]
         [SerializeField] PlayerInput playerInput;
-        [SerializeField] string uiActionMapName;
-        [SerializeField] string gameActionMapName;
+        [SerializeField] string uiMap;
+        [SerializeField] string gameMap;
 
         /// <summary>
         /// Opens a UIElement object, marks target as active and recursively opens any dependency UIElement's. 
         /// Both the target and dependencies are marked as open. if the target has an IUiInitializer, 
         /// it also initializes. Lastly enables UI controls.
         /// </summary>
-        /// <param name="target">The target UIElement to open.</param>
+        /// <param name="target"></param>
         public void OpenUI(UIElement target){
-
-            void CloseUnallowed(){
-                foreach (var element in target.nonAllowedElements){
-                    if(!activeElements.Contains(element))
-                        continue;
-
-                    element.Close(true);
-                    activeElements.Remove(element);
-                }
-            }
-
-            List<UIElement> visitedElements = new();
-            lastTarget = target;
+            if(target.grabAttention)
+                lastTarget = target;
             
-            if(!activeElements.Contains(target))
-                activeElements.Add(target.Open());
+            activeElements.Add(target.Open());
+            HashSet<UIElement> dependencies = new();
+            target.GetDependencies(ref dependencies);
 
-            activeElements.AddRange(target.OpenDependencies(visitedElements));
-            if(target.nonAllowedElements != null)
-                CloseUnallowed();
-
-            target.TryGetComponent(out IUiInitializer Initializer);
-            Initializer?.Init();
-
-            playerInput.SwitchCurrentActionMap(uiActionMapName);
+            foreach (var element in dependencies)
+                activeElements.Add(element.Open());
         }
 
         /// <summary>
@@ -54,17 +36,32 @@ namespace Craglex.SimpleUI
         /// </summary>
         /// <param name="target"></param>
         public void CloseUI(UIElement target){
-            if(!activeElements.Contains(target))
+            HashSet<UIElement> dependencies = new();
+            target.GetDependencies(ref dependencies);
+            foreach (var element in dependencies)
+                activeElements.Remove(element.Close());
+            
+            target.Close();
+            if(target.returnElement != null)
+                OpenUI(target.returnElement);
+        }
+
+        /// <summary>
+        /// Sets a certain UIElement as the active target.
+        /// </summary>
+        /// <param name="target"></param>
+        public void SetActive(UIElement target){
+            if(target.isOpen)
                 return;
-            target.Close(true);
-            activeElements.Remove(target);
+            
+            lastTarget = target;
         }
 
         /// <summary>
         /// Closes active UIElement then uses OpenUI() to open the last element of
         /// target. Marks are also applied.
         /// </summary>
-        private void ReturnToLastMenu(){
+        public void ReturnToLastMenu(){
             if(lastTarget.returnElement == null){
                 ReturnToGame();
                 return;
@@ -76,9 +73,9 @@ namespace Craglex.SimpleUI
         /// <summary>
         /// Resets the UI.
         /// </summary>
-        private void ResetUI(){
+        public void ResetUI(){
             foreach (var element in activeElements){
-                element.Close(true);
+                element.Close();
             }
 
             activeElements.Clear();
@@ -88,19 +85,19 @@ namespace Craglex.SimpleUI
         /// <summary>
         /// Resets the UI and disables UI controls.
         /// </summary>
-        private void ReturnToGame(){
+        public void ReturnToGame(){
             ResetUI();
-            playerInput.SwitchCurrentActionMap(gameActionMapName);
+            //playerInput.SetMap(gameMap);
         }
 
-        public void Start(){
+        public void Awake(){
             if (playerInput == null)
                 Debug.LogError($"[{gameObject.name}] PlayerInput is not assigned!");
 
-            if (string.IsNullOrWhiteSpace(uiActionMapName))
+            if (string.IsNullOrWhiteSpace(uiMap))
                 Debug.LogError($"[{gameObject.name}] uiActionMapName is empty or not set!");
 
-            if (string.IsNullOrWhiteSpace(gameActionMapName))
+            if (string.IsNullOrWhiteSpace(gameMap))
                 Debug.LogError($"[{gameObject.name}] gameActionMapName is empty or not set!");
         }
     }
