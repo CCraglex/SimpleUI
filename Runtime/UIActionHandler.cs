@@ -4,11 +4,11 @@ using UnityEngine.InputSystem;
 namespace Craglex.SimpleUI
 {
     public abstract class UIActionHandler{
-        protected GameUI GameUI;
+        protected SimpleUIHandler SimpleUI;
         public abstract void HandleAction(InputAction.CallbackContext ctx, UIElement target);
 
-        public UIActionHandler(GameUI gameUI){
-            GameUI = gameUI;
+        public UIActionHandler(SimpleUIHandler simpleUI){
+            SimpleUI = simpleUI;
         }
     }
 }

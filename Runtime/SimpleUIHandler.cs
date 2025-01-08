@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 namespace Craglex.SimpleUI
 {
-    public class GameUI : MonoBehaviour
+    public class SimpleUIHandler : MonoBehaviour
     {
         private HashSet<UIElement> activeElements = new();
         internal UIElement lastTarget = null;

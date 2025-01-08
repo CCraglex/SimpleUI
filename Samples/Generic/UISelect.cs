@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 namespace Craglex.SimpleUI.Actions
 {
     public class UISelect : UIActionHandler {
-        public UISelect(GameUI gameUI) : base(gameUI){ GameUI = gameUI; }
+        public UISelect(SimpleUIHandler simpleUI) : base(simpleUI){ SimpleUI = simpleUI; }
 
         public override void HandleAction(InputAction.CallbackContext ctx, UIElement target){
 

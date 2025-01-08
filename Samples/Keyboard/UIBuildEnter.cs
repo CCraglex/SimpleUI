@@ -3,14 +3,14 @@ using UnityEngine.InputSystem;
 namespace Craglex.SimpleUI.Actions
 {
     public class UIBuildEnter : UIActionHandler{
-        public UIBuildEnter(GameUI gameUI) : base(gameUI){ GameUI = gameUI; }
+        public UIBuildEnter(SimpleUIHandler simpleUI) : base(simpleUI){ simpleUI = SimpleUI; }
 
         public override void HandleAction(InputAction.CallbackContext ctx,UIElement target){
             if(ctx.phase != InputActionPhase.Started)
                 return;
             
-            if(GameUI.lastTarget == null){
-                GameUI.OpenUI(target);
+            if(SimpleUI.lastTarget == null){
+                SimpleUI.OpenUI(target);
             }
         }
     }

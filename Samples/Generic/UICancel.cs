@@ -3,16 +3,16 @@ using UnityEngine.InputSystem;
 namespace Craglex.SimpleUI.Actions
 {
     public class UICancel : UIActionHandler {
-        public UICancel(GameUI gameUI) : base(gameUI){ GameUI = gameUI; }
+        public UICancel(SimpleUIHandler simpleUI) : base(simpleUI){ SimpleUI = simpleUI; }
 
         public override void HandleAction(InputAction.CallbackContext ctx,UIElement target){
             if(ctx.phase != InputActionPhase.Started)
                 return;
             
-            if(GameUI.lastTarget != null)
-                GameUI.ReturnToLastMenu();
+            if(SimpleUI.lastTarget != null)
+                SimpleUI.ReturnToLastMenu();
 
-            else GameUI.ReturnToGame();
+            else SimpleUI.ReturnToGame();
         }
     }
 }
