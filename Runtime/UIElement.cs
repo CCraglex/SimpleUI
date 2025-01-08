@@ -10,15 +10,12 @@ namespace Craglex.SimpleUI
     {
         [SerializeField] List<UIElement> dependencyElements;
         private CanvasGroup canvas;
-        private Image image;
         public bool isOpen;
         public bool grabAttention;
-        
         public UIElement returnElement;
 
         public virtual void Awake(){
             canvas = GetComponent<CanvasGroup>();
-            TryGetComponent(out image);
         }
         public virtual UIElement Open(){
             canvas.alpha = 1;
@@ -40,6 +37,9 @@ namespace Craglex.SimpleUI
         public UIElement Restart(){
             return Open();
         }
+        public void AddElement<T>() where T : Graphic{
+            UIComponent<T> newElement = new(transform);
+        }
         public void GetDependencies(ref HashSet<UIElement> visitedElements){
             HashSet<UIElement> retVal = new();
 
@@ -53,43 +53,6 @@ namespace Craglex.SimpleUI
                 visitedElements.Add(element);
                 element.GetDependencies(ref visitedElements);
             }
-        }
-        public void SetCanvasVisibility(bool value){
-            if(value) 
-                canvas.alpha = 1;
-            else canvas.alpha = 0;
-        }
-        public void SetCanvasVisibility(float value){
-            canvas.alpha = Mathf.Clamp(value,0,1);
-        }
-        public void SetColor(Color value){
-            if(image == null)
-                return;
-            
-            image.color = value;
-        }
-        public void SetColor(Vector3 value){
-            if(image == null)
-                return;
-            
-            image.color = new Color(value.x,value.y,value.z);
-        }
-        public void SetColor(Vector4 value){
-            image.color = new Color(value.x,value.y,value.z,value.w);
-        }
-        public void SetAlpha(float value){
-            if(image == null)
-                return;
-            
-            var c = new Color(image.color.r,image.color.g,image.color.b);
-            image.color = new(c.r,c.g,c.b,value);
-        }
-        public void SetAlpha(bool value){
-            if(image == null)
-                return;
-            int a = value ? 1 : 0;
-            var c = new Color(image.color.r,image.color.g,image.color.b);
-            image.color = new(c.r,c.g,c.b,a);          
         }
     }
 }

@@ -3,15 +3,17 @@ using UnityEngine.UI;
 using DG.Tweening;
 
 namespace Craglex.SimpleUI{
-    public interface IImageHandler : IUiComponentHandler<Image>
+    public class ImageHandler : UIComponent<Image>
     {
+        public ImageHandler(Transform transform) : base(transform) { }
+
         /// <summary>
         /// Set color of image
         /// </summary>
         /// <param name="cVal"></param>
         public void SetColor(Color cVal)
         {
-            Value.color = cVal;
+            Element.color = cVal;
         }
 
         /// <summary>
@@ -20,9 +22,9 @@ namespace Craglex.SimpleUI{
         /// <param name="fVal"></param>
         public void SetAlpha(float fVal)
         {
-            var C = Value.color;
+            var C = Element.color;
             C.a = fVal;
-            Value.color = C;
+            Element.color = C;
         }
 
         /// <summary>
@@ -31,7 +33,7 @@ namespace Craglex.SimpleUI{
         /// <param name="sprite"></param>
         public void SetSprite(Sprite sprite)
         {
-            Value.sprite = sprite;
+            Element.sprite = sprite;
         }
 
         /// <summary>
@@ -40,7 +42,7 @@ namespace Craglex.SimpleUI{
         /// <param name="material"></param>
         public void SetMaterial(Material material)
         {
-            Value.material = material;
+            Element.material = material;
         }
 
         /// <summary>
@@ -49,7 +51,7 @@ namespace Craglex.SimpleUI{
         /// <param name="fillAmount"></param>
         public void SetFillAmount(float fillAmount)
         {
-            Value.fillAmount = Mathf.Clamp01(fillAmount);
+            Element.fillAmount = Mathf.Clamp01(fillAmount);
         }
 
         /// <summary>
@@ -58,7 +60,7 @@ namespace Craglex.SimpleUI{
         /// <param name="value"></param>
         public void SetRaycastTarget(bool value)
         {
-            Value.raycastTarget = value;
+            Element.raycastTarget = value;
         }
 
         /// <summary>
@@ -66,7 +68,7 @@ namespace Craglex.SimpleUI{
         /// </summary>
         public void SetNativeSize()
         {
-            Value.SetNativeSize();
+            Element.SetNativeSize();
         }
 
         /// <summary>
@@ -75,7 +77,7 @@ namespace Craglex.SimpleUI{
         /// <param name="value"></param>
         public void SetPreserveAspect(bool value)
         {
-            Value.preserveAspect = value;
+            Element.preserveAspect = value;
         }
 
         /// <summary>
@@ -85,7 +87,7 @@ namespace Craglex.SimpleUI{
         /// <param name="duration"></param>
         public void FadeImage(float targetAlpha, float duration)
         {
-            Value.DOFade(targetAlpha,duration);
+            Element.DOFade(targetAlpha,duration);
         }
 
         /// <summary>
@@ -94,8 +96,8 @@ namespace Craglex.SimpleUI{
         /// <param name="tint"></param>
         public void SetColorTint(Color tint)
         {
-            var currentColor = Value.color;
-            Value.color = currentColor * tint;
+            var currentColor = Element.color;
+            Element.color = currentColor * tint;
         }
 
         /// <summary>
@@ -105,10 +107,10 @@ namespace Craglex.SimpleUI{
         /// <param name="vertical"></param>
         public void FlipImage(bool horizontal, bool vertical)
         {
-            var scale = Value.rectTransform.localScale;
+            var scale = Element.rectTransform.localScale;
             if (horizontal) scale.x = -scale.x;
             if (vertical) scale.y = -scale.y;
-            Value.rectTransform.localScale = scale;
+            Element.rectTransform.localScale = scale;
         }
 
         /// <summary>

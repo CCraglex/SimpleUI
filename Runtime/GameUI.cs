@@ -13,6 +13,38 @@ namespace Craglex.SimpleUI
         [SerializeField] string uiMap;
         [SerializeField] string gameMap;
 
+        public void Awake(){
+            if (playerInput == null)
+                Debug.LogError($"[{gameObject.name}] PlayerInput is not assigned!");
+
+            if (string.IsNullOrWhiteSpace(uiMap))
+                Debug.LogError($"[{gameObject.name}] uiActionMapName is empty or not set!");
+
+            if (string.IsNullOrWhiteSpace(gameMap))
+                Debug.LogError($"[{gameObject.name}] gameActionMapName is empty or not set!");
+        }
+
+
+        public static GameObject CreateElement(GameObject Prefab){
+            GameObject newObj = Instantiate(Prefab);
+            bool isUIElement = newObj.TryGetComponent(typeof(UIElement),out _);
+            if(isUIElement == false){
+                newObj.AddComponent<RectTransform>();
+                newObj.AddComponent<UIElement>();
+            }
+
+            return newObj;
+        }
+
+        public static GameObject CreateElement(){
+            GameObject newElement = new();
+            newElement.AddComponent<RectTransform>();
+            newElement.AddComponent<UIElement>();
+            return newElement;
+        }
+
+
+
         /// <summary>
         /// Opens a UIElement object, marks target as active and recursively opens any dependency UIElement's. 
         /// Both the target and dependencies are marked as open. if the target has an IUiInitializer, 
@@ -88,17 +120,6 @@ namespace Craglex.SimpleUI
         public void ReturnToGame(){
             ResetUI();
             //playerInput.SetMap(gameMap);
-        }
-
-        public void Awake(){
-            if (playerInput == null)
-                Debug.LogError($"[{gameObject.name}] PlayerInput is not assigned!");
-
-            if (string.IsNullOrWhiteSpace(uiMap))
-                Debug.LogError($"[{gameObject.name}] uiActionMapName is empty or not set!");
-
-            if (string.IsNullOrWhiteSpace(gameMap))
-                Debug.LogError($"[{gameObject.name}] gameActionMapName is empty or not set!");
         }
     }
 }
