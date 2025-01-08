@@ -37,7 +37,7 @@ namespace Craglex.SimpleUI
         public UIElement Restart(){
             return Open();
         }
-        public void AddElement<T>() where T : Graphic{
+        public void AddElement<T>() where T : Component{
             UIComponent<T> newElement = new(transform);
         }
         public void GetDependencies(ref HashSet<UIElement> visitedElements){

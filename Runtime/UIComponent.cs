@@ -1,18 +1,19 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace Craglex.SimpleUI
 {
-    public class UIComponent<T> where T : Graphic{
-
+    public class UIComponent<T> where T : Component{
         protected Transform Transform;
         protected CanvasGroup CanvasGroup;
-        protected T Element;
+        public T Element;
 
         public UIComponent(Transform transform){
             Transform = transform;
             Element   = transform.GetComponent<T>();
-            CanvasGroup = transform.GetComponent<CanvasGroup>();
+            if(transform.TryGetComponent(out Element) == false)
+                Element = Transform.gameObject.AddComponent<T>();
         }
     }
 }

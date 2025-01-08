@@ -81,16 +81,6 @@ namespace Craglex.SimpleUI{
         }
 
         /// <summary>
-        /// Fades the image alpha to targetAlpha in duration
-        /// </summary>
-        /// <param name="targetAlpha"></param>
-        /// <param name="duration"></param>
-        public void FadeImage(float targetAlpha, float duration)
-        {
-            Element.DOFade(targetAlpha,duration);
-        }
-
-        /// <summary>
         /// Mulitplies image color with tint
         /// </summary>
         /// <param name="tint"></param>
